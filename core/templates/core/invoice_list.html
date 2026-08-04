@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="h4 fw-semibold text-navy mb-1">Invoices</h2>
+        <p class="text-muted mb-0">Track issue dates, due dates, and payment status.</p>
+    </div>
+    <a href="{% url 'invoice_create' %}" class="btn btn-primary">Create Invoice</a>
+</div>
+
+<div class="card card-soft">
+    <div class="card-body p-0">
+        {% if invoices %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Client</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th class="text-end">Total</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td><a href="{% url 'invoice_detail' invoice.pk %}" class="text-decoration-none text-navy fw-semibold">{{ invoice.client.name }}</a></td>
+                        <td>{{ invoice.issue_date }}</td>
+                        <td>{{ invoice.due_date }}</td>
+                        <td class="text-end">${{ invoice.total_amount }}</td>
+                        <td>
+                            {% if invoice.status == 'draft' %}
+                                <span class="badge bg-secondary">Draft</span>
+                            {% elif invoice.status == 'sent' %}
+                                <span class="badge bg-warning text-dark">Sent</span>
+                            {% elif invoice.status == 'paid' %}
+                                <span class="badge bg-success">Paid</span>
+                            {% else %}
+                                <span class="badge bg-danger">Overdue</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if invoice.status == 'draft' %}
+                                <a href="{% url 'invoice_send' invoice.pk %}" class="btn btn-sm btn-outline-primary">Send</a>
+                                <a href="{% url 'invoice_delete' invoice.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-muted">
+            <p class="mb-2">No invoices yet.</p>
+            <a href="{% url 'invoice_create' %}" class="btn btn-primary">Create your first invoice</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

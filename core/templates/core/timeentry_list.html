@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="h4 fw-semibold text-navy mb-1">Time Entries</h2>
+        <p class="text-muted mb-0">Record billable work and keep invoices aligned.</p>
+    </div>
+    <a href="{% url 'timeentry_create' %}" class="btn btn-primary">Log Time</a>
+</div>
+
+<div class="card card-soft">
+    <div class="card-body p-0">
+        {% if entries %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Project</th>
+                        <th>Date</th>
+                        <th class="text-end">Hours</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr>
+                        <td>{{ entry.project.name }}</td>
+                        <td>{{ entry.date }}</td>
+                        <td class="text-end">{{ entry.hours }}</td>
+                        <td>{{ entry.description|default:'—' }}</td>
+                        <td>
+                            {% if entry.invoiced %}
+                                <span class="badge bg-success">Invoiced</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Not yet</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if not entry.invoiced %}
+                                <a href="{% url 'timeentry_update' entry.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a href="{% url 'timeentry_delete' entry.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-muted">
+            <p class="mb-2">No time entries yet.</p>
+            <a href="{% url 'timeentry_create' %}" class="btn btn-primary">Log your first entry</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
